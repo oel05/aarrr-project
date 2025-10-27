@@ -770,32 +770,49 @@ mysql -u root -p
 
 **Windows 사용자 - 비밀번호 리셋 방법:**
 
+**Step 1:** 관리자 권한으로 명령 프롬프트 실행
+
+**Step 2:** MySQL 서비스 중지
+
 ```cmd
-REM Step 1: 관리자 권한으로 명령 프롬프트 실행
-
-REM Step 2: MySQL 서비스 중지
 net stop MySQL80
+```
 
-REM Step 3: 안전 모드로 MySQL 시작
+**Step 3:** 안전 모드로 MySQL 시작
+
+```cmd
 mysqld --skip-grant-tables
+```
 
-REM Step 4: 새 명령 프롬프트 창 열어서
+**Step 4:** 새 명령 프롬프트 창 열어서
+
+```cmd
 mysql -u root
+```
 
-REM Step 5: MySQL 프롬프트에서 비밀번호 변경
+**Step 5:** MySQL 프롬프트에서 비밀번호 변경
+
+```sql
 FLUSH PRIVILEGES;
 ALTER USER 'root'@'localhost' IDENTIFIED BY 'Codeit10!';
 EXIT;
-
-REM Step 6: mysqld 프로세스 종료 (작업 관리자에서 mysqld.exe 종료)
-
-REM Step 7: 정상 모드로 MySQL 재시작
-net start MySQL80
-
-REM Step 8: 새 비밀번호로 접속 확인
-mysql -u root -p
-REM 비밀번호 입력: Codeit10!
 ```
+
+**Step 6:** mysqld 프로세스 종료 (작업 관리자에서 mysqld.exe 종료)
+
+**Step 7:** 정상 모드로 MySQL 재시작
+
+```cmd
+net start MySQL80
+```
+
+**Step 8:** 새 비밀번호로 접속 확인
+
+```cmd
+mysql -u root -p
+```
+
+비밀번호 입력: `Codeit10!`
 
 ---
 
@@ -850,8 +867,9 @@ pwd
 **Windows:**
 ```cmd
 cd
-REM 결과가 C:\Users\내이름\Documents\sub_analytics 가 아니면 잘못된 위치!
 ```
+
+결과가 `C:\Users\내이름\Documents\sub_analytics` 가 아니면 잘못된 위치!
 
 #### Step 2: 프로젝트 폴더로 이동
 
@@ -879,11 +897,15 @@ ls datas/
 **Windows:**
 ```cmd
 dir
-REM datas 폴더가 보여야 합니다!
-
-dir datas\
-REM "주제 2. 구독서비스 프로덕트 데이터 분석" 폴더가 보여야 합니다!
 ```
+
+결과: `datas` 폴더가 보여야 합니다!
+
+```cmd
+dir datas\
+```
+
+결과: `주제 2. 구독서비스 프로덕트 데이터 분석` 폴더가 보여야 합니다!
 
 #### Step 4: 다시 데이터 적재 명령어 실행
 
