@@ -680,9 +680,9 @@ GROUP BY platform
 ORDER BY user_count DESC;
 ```
 
-### 미리 준비된 SQL 쿼리 파일 사용하기
+### SQL 쿼리 파일 사용하기
 
-프로젝트의 `sql/` 폴더에 분석용 쿼리가 준비되어 있습니다:
+프로젝트의 `sql/` 폴더에 분석용 쿼리 작성하기
 
 ```
 sql/
@@ -693,11 +693,6 @@ sql/
 ├── 05_revenue.sql               # 구독 및 매출 분석
 └── 06_funnel_analysis.sql       # 전환율 분석
 ```
-
-**사용 방법:**
-1. MySQL Workbench에서 **File** → **Open SQL Script**
-2. 원하는 `.sql` 파일 선택
-3. 쿼리 실행 ⚡
 
 ---
 
