@@ -22,6 +22,7 @@ sub_analytics
 3. [데이터 확인하기](#3-데이터-확인하기)
 4. [SQL 쿼리 실행하기](#4-sql-쿼리-실행하기)
 5. [문제 해결](#5-문제-해결)
+6. [부록: MySQL 완전 삭제 후 재설치 (Mac)](#6-부록-mysql-완전-삭제-후-재설치-mac)
 
 ---
 
@@ -680,9 +681,9 @@ GROUP BY platform
 ORDER BY user_count DESC;
 ```
 
-### SQL 쿼리 파일 사용하기
+### 미리 준비된 SQL 쿼리 파일 사용하기
 
-프로젝트의 `sql/` 폴더에 분석용 쿼리 작성하기
+프로젝트의 `sql/` 폴더에 분석용 쿼리가 준비되어 있습니다:
 
 ```
 sql/
@@ -693,6 +694,11 @@ sql/
 ├── 05_revenue.sql               # 구독 및 매출 분석
 └── 06_funnel_analysis.sql       # 전환율 분석
 ```
+
+**사용 방법:**
+1. MySQL Workbench에서 **File** → **Open SQL Script**
+2. 원하는 `.sql` 파일 선택
+3. 쿼리 실행 ⚡
 
 ---
 
@@ -1065,6 +1071,268 @@ DESCRIBE complete_signup;
 -- 또는
 SHOW CREATE TABLE complete_signup;
 ```
+
+---
+
+## 6. 부록: MySQL 완전 삭제 후 재설치 (Mac)
+
+⚠️ **주의:** 이 방법은 MySQL을 완전히 삭제하므로 기존 데이터가 모두 사라집니다!
+**복구가 불가능하니 신중하게 진행하세요.**
+
+### 언제 이 방법을 사용하나요?
+
+- MySQL 설치가 꼬여서 재설치가 필요한 경우
+- 비밀번호를 잊어버려서 리셋이 안 되는 경우
+- MySQL 서비스가 계속 오류를 일으키는 경우
+- 깨끗하게 처음부터 다시 시작하고 싶은 경우
+
+---
+
+### Step 1: MySQL 완전 삭제
+
+**터미널에서 다음 명령어를 순서대로 실행:**
+
+#### 1-1. MySQL 서비스 중지
+```bash
+brew services stop mysql
+killall mysqld
+```
+
+#### 1-2. Homebrew로 설치된 MySQL 제거
+```bash
+brew uninstall mysql
+brew cleanup
+```
+
+#### 1-3. MySQL 관련 파일 및 디렉토리 삭제
+```bash
+# MySQL 데이터 디렉토리 삭제
+sudo rm -rf /opt/homebrew/var/mysql
+sudo rm -rf /usr/local/var/mysql
+
+# MySQL 설정 파일 삭제
+sudo rm -rf /opt/homebrew/etc/my.cnf
+sudo rm -rf /usr/local/etc/my.cnf
+sudo rm -rf ~/.my.cnf
+
+# MySQL 로그 파일 삭제
+sudo rm -rf /opt/homebrew/var/log/mysql
+sudo rm -rf /usr/local/var/log/mysql
+
+# MySQL LaunchAgents 삭제
+rm -rf ~/Library/LaunchAgents/homebrew.mxcl.mysql.plist
+sudo rm -rf /Library/LaunchAgents/homebrew.mxcl.mysql.plist
+sudo rm -rf /Library/LaunchDaemons/homebrew.mxcl.mysql.plist
+
+# MySQL 환경설정 삭제
+rm -rf ~/Library/PreferencePanes/My*
+sudo rm -rf /Library/PreferencePanes/My*
+sudo rm -rf /Library/Receipts/mysql*
+sudo rm -rf /Library/Receipts/MySQL*
+sudo rm -rf /private/var/db/receipts/*mysql*
+```
+
+비밀번호를 요구하면 Mac 로그인 비밀번호를 입력하세요.
+
+#### 1-4. 삭제 확인
+```bash
+# MySQL이 완전히 삭제되었는지 확인
+which mysql
+```
+
+결과: `mysql not found` 또는 아무것도 안 나오면 성공!
+
+---
+
+### Step 2: MySQL 재설치
+
+#### 2-1. Homebrew 업데이트
+```bash
+brew update
+```
+
+#### 2-2. MySQL 설치
+```bash
+brew install mysql
+```
+
+설치가 완료되면 다음과 같은 메시지가 나타납니다:
+```
+==> mysql
+We've installed your MySQL database without a root password. To secure it run:
+    mysql_secure_installation
+```
+
+#### 2-3. MySQL 서비스 시작
+```bash
+brew services start mysql
+```
+
+다음과 같은 메시지가 나오면 성공:
+```
+==> Successfully started `mysql` (label: homebrew.mxcl.mysql)
+```
+
+#### 2-4. MySQL 서비스 확인
+```bash
+brew services list
+```
+
+결과에서 `mysql` 줄의 `Status`가 `started`이면 정상:
+```
+Name  Status  User      File
+mysql started yongha-m3 ~/Library/LaunchAgents/homebrew.mxcl.mysql.plist
+```
+
+---
+
+### Step 3: MySQL 비밀번호 설정 (Codeit10!)
+
+#### 3-1. MySQL 접속 (비밀번호 없이)
+```bash
+mysql -u root
+```
+
+MySQL 프롬프트(`mysql>`)가 나타나면 성공!
+
+#### 3-2. 비밀번호 설정
+MySQL 프롬프트에서 다음 명령어 실행:
+
+```sql
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'Codeit10!';
+FLUSH PRIVILEGES;
+EXIT;
+```
+
+각 줄마다 Enter를 누르세요. 다음과 같이 나오면 성공:
+```
+Query OK, 0 rows affected (0.01 sec)
+Query OK, 0 rows affected (0.00 sec)
+Bye
+```
+
+#### 3-3. 비밀번호 설정 확인
+```bash
+mysql -u root -p
+```
+
+비밀번호 입력 프롬프트가 나타나면 `Codeit10!` 입력:
+```
+Enter password: [Codeit10! 입력 - 화면에 안 보임]
+```
+
+MySQL 프롬프트가 나타나면 성공!
+```sql
+mysql>
+```
+
+`EXIT;`로 빠져나옵니다.
+
+---
+
+### Step 4: MySQL Workbench 재설치 (선택사항)
+
+MySQL Workbench도 삭제했다면 다시 설치:
+
+```bash
+brew install --cask mysqlworkbench
+```
+
+---
+
+### Step 5: 데이터베이스 생성 및 데이터 적재
+
+이제 **섹션 2 (데이터베이스 생성 및 데이터 적재하기)**로 돌아가서 다음을 진행하세요:
+
+1. 프로젝트 폴더 구조 만들기
+2. `sub_analytics` 데이터베이스 생성
+3. SQL 파일 적재
+
+---
+
+### 문제 해결 (재설치 관련)
+
+#### 문제 1: "brew services start mysql" 실행 후에도 mysql 접속이 안 돼요
+
+**해결책:**
+
+MySQL 서비스가 제대로 시작되지 않았을 수 있습니다.
+
+```bash
+# MySQL 로그 확인
+tail -50 /opt/homebrew/var/log/mysql/*.err
+```
+
+또는
+
+```bash
+# 수동으로 MySQL 시작
+mysql.server start
+```
+
+---
+
+#### 문제 2: "brew install mysql" 시 에러 발생
+
+**해결책 1: Homebrew 업데이트**
+```bash
+brew update
+brew doctor
+```
+
+`brew doctor`가 문제점을 알려주면 그 지시를 따르세요.
+
+**해결책 2: Xcode Command Line Tools 설치**
+```bash
+xcode-select --install
+```
+
+---
+
+#### 문제 3: 파일 삭제 시 "Permission denied" 에러
+
+**해결책:**
+
+`sudo`를 붙여야 하는 명령어가 있습니다. Mac 로그인 비밀번호를 입력하세요.
+
+```bash
+# 예시
+sudo rm -rf /opt/homebrew/var/mysql
+# Password: [Mac 로그인 비밀번호 입력]
+```
+
+---
+
+#### 문제 4: MySQL이 계속 자동으로 시작돼요 (원하지 않음)
+
+**해결책:**
+
+자동 시작 비활성화:
+```bash
+brew services stop mysql
+```
+
+수동으로 시작하고 싶을 때만:
+```bash
+mysql.server start
+```
+
+종료:
+```bash
+mysql.server stop
+```
+
+---
+
+### ✅ 재설치 완료 체크리스트
+
+- [ ] MySQL 서비스 정상 실행 (`brew services list`로 확인)
+- [ ] MySQL 접속 가능 (`mysql -u root -p` + 비밀번호 `Codeit10!`)
+- [ ] 데이터베이스 생성 가능 (`CREATE DATABASE` 명령어)
+- [ ] SQL 파일 적재 가능 (`mysql ... < dump.sql`)
+- [ ] 17개 테이블 확인 (`SHOW TABLES`)
+
+모두 체크되었다면 재설치 완료! 🎉
 
 ---
 
